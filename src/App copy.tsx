@@ -15,110 +15,279 @@ pdfMake.fonts = {
 };
 
 function App() {
-  // 生成大量資料的輔助函數
-  const generateLargeData = () => {
+  const generateProcessingData = () => {
     const data = [];
-    const names = ["張三", "李四", "王五", "陳六", "林七", "吳八", "趙九"];
-    const ages = ["25", "30", "28", "35", "27", "32", "29"];
-    const cities = ["台北", "台中", "高雄", "新竹", "彰化", "嘉義", "台南"];
-    const qrcode =
-      "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC0AAAAtCAMAAAANxBKoAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJUExURf///wAAAAAAAH5RqV0AAAADdFJOU///ANfKDUEAAAAJcEhZcwAADsIAAA7CARUoSoAAAADxSURBVEhLtY0BDoJAEAPx/5+W3aG2BxyIiU3wutNJXB7mNQQCPd8y93b9kvR0K+fk3i5DDk193I6Epj5uc3K1HcnVZgJ1z+1IoO65ea0kdSfifXRszO0M1F/mub3PNq3ZwGU2dc0GhsDZ1GVWO5L6zZ7bSCoQWi5iasT3nc3KR5KTxn3xfm/7c8ar8qut1/+o29xUb8vDbQ7dh0VrXTOzwjqzuRV7ND4WWObe5q2kiaFX23NbTIQrOS+GrtFJzouhS52mlZcmQ46bVl6aDDvZtXurL43s2r017OwX0tOH9dGRqYX0tGNENt07/an9ryzLG7IgA4EaD5FkAAAAAElFTkSuQmCC";
-    const barcode =
-      "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAAAPCAMAAABEF7i9AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJUExURf///wAAAAAAAH5RqV0AAAADdFJOU///ANfKDUEAAAAJcEhZcwAADsIAAA7CARUoSoAAAADPSURBVDhPbYtBCsRADMPa/396G0mEPcTQqZGV5y/v+7zz9nzfABqj5PtJs6xnmLFU15dA5ziaZT3DjKW6vgQ6x9Es6xlmLNX1JdA5jmZZzzBjqa4vgc5xNMt6hhlLdX0JdI6jWdYzzFiq60ugcxzNsp5hxlJdXwKd42iW9Qwzlur6EugcR7OsZ5ixVNeXQOc4mmU9w4ylur4EOsfRLOsZZizV9SXQOY5mWc8wY6muL4HOcTTLeoYZS3V9CXSOo1nWM8xYqutLoHMczbKW5/kBwdAB/979pvkAAAAASUVORK5CYII=";
+    // Sample data based on the image
+    const processingData = {
+      projectNumber: "T333",
+      projectName: "T333",
+      printDate: new Date().toLocaleString("zh-TW", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+      }),
+      pageInfo: "1/1",
+      totalHoles: "0孔",
+      totalCutting: "0車",
+      items: [
+        {
+          id: "RH001",
+          spec: "RH200X100X5.5X8",
+          material: "SN490YB",
+          length: "3000",
+          processLength: "8684",
+          quantity: "313",
+          holes: "3",
+          notes: "",
+        },
+      ],
+      barcodeInfo: {
+        location: "C7-12",
+        serialNumber: "M1133",
+        length: "155",
+        quantity: "2",
+      },
+    };
 
-    const totalRecords = 100 * 40;
-
-    // 生成 7000 頁的資料，每頁約 10 筆資料
-    for (let i = 0; i < totalRecords; i++) {
-      const randomIndex = i % 7; // 使用模除運算循環使用範例資料
-      data.push([
-        names[randomIndex],
-        ages[randomIndex],
-        cities[randomIndex],
-        { image: qrcode, width: 45, height: 45 }, // 第一個條碼
-        { image: barcode, width: 80, height: 15 }, // 第二個條碼
-      ]);
-    }
+    data.push(processingData);
     return data;
   };
 
   const [progress, setProgress] = useState<string>("");
   const [isDownloading, setIsDownloading] = useState(false);
- 
 
-
-  // 停止計時器
-  // const stopTimer = () => {
-  //   if (timerInterval) {
-  //     clearInterval(timerInterval);
-  //     setTimerInterval(null);
-  //   }
-  // };
-
-
-  const downloadFullPDF = async () => {
+  const downloadProcessingList = async () => {
     setProgress("正在生成 PDF 文件...");
-    console.log("11111111111");
     setIsDownloading(true);
 
-    await new Promise((resolve) => setTimeout(resolve, 0));
-
     try {
+      const data = generateProcessingData()[0];
+
       const docDefinition = {
         pageSize: "A4",
-        pageOrientation: "landscape",
-        defaultStyle: {
-          font: "aaa",
-        },
+        pageMargins: [20, 20, 20, 20],
         content: [
           {
-            text: "表格範例 (共 7000 頁)",
-            style: "header",
-            margin: [0, 0, 0, 20],
+            columns: [
+              {
+                width: 20,
+                image:
+                  "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAcCAYAAAB75n/uAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAKJSURBVHgBvVZBbtpAFH02Ro1KpHCDOjcggKqSqqo5QekJak4QKrZIwLqVQk8AnID0BJBFS7sBC7GPI9aoVCoREuDpmwCtMcQYUvVJA2Y8897/f/78j4IAKBaLuqIoVY4an+vYA4rfyzaO9BQm9lLgZjltc7SEEJ/K5bKFQwW+4riiwDlJ4S7rEXDD4nzFcZxritnbeFRsWB3VvyHSVSAusBsxelKT4qVSqUpDDO8CbZ382BCYNvgYxf4wKWRSyOZ3aeWV6iIvAaKpHEbuhr7yKp/PNzQZEmBaJbmxZbHtQzSCjzGDwQD9fj9DD6ZN/ja8C3jAOR5w2UXWcr/XNC1GK+W+2vL9H5AYlmVhNptBaSMi1qmFLeCY55hce0VlNkljSPyGArlCoXDremeOx+OLXq8XGw6Hfw3dFICZwrjuIY6S9JKx/Sw94eGNsAXxeFwedNU9pyIYZKzl5gbHD2ZKU4oG2RhUwHsGRjgcPgmyUdu1gCE0nfJH6yXGaWm1qqqvGarMdDr9iQDYKUAU6abexlMb5Q+tGdT6K/zKIiCChohQdA5T42WUidHB0bMgu/YQOAw7BVg6ruB/ox8n8ALj98A8jQPx/0PEa537jsg77IlkMilLSNE7v61UrIRGbDpXMi01zGwgtNbRnmCuxzG5XZLneDcuNziEsB8M0aIvLNJSINR9aF0ikahuIydabDppTdBKBUoGPvBrQiSXofHOlTqdzn2pV89x9xYInzqAvJ02HgESj2i1sSK/F5AfKYxs1poay/RpCHMDiyayL7lF8rNut7vWRzbO4DkbDYWyK6/o/M7/PiSv0OozdjEbh+ALIjFmW5XjRmaduxbxkDP4l6CYSYFm0GL3G9yRHDBxPr6+AAAAAElFTkSuQmCC",
+                fit: [15, 15],
+                margin: [0, 10, 0, 0],
+              },
+              {
+                text: "加工明細單",
+                fontSize: 15,
+                bold: true,
+                margin: [0, 5, 0, 0],
+              },
+            ],
           },
           {
+            columns: [
+              {
+                text: "加工明細單",
+                alignment: "center",
+                fontSize: 20,
+                bold: true,
+                margin: [0, 10, 0, 0],
+              },
+            ],
+          },
+          {
+            columns: [
+              {
+                text: `列印日期: ${data.printDate}`,
+                alignment: "right",
+                fontSize: 10,
+                margin: [0, 15, 0, 0],
+              },
+            ],
+          },
+          {
+            margin: [0, 20, 0, 10],
+            columns: [
+              {
+                width: "50%",
+                text: [
+                  { text: "工程案號: ", bold: true },
+                  data.projectNumber,
+                  "\n",
+                  { text: "工程名稱: ", bold: true },
+                  data.projectName,
+                  "\n",
+                ],
+              },
+              {
+                width: "50%",
+                text: [
+                  { text: "頁數: ", alignment: "right", bold: true },
+                  data.pageInfo,
+                  "\n",
+                  { text: "總孔數: ", alignment: "right", bold: true },
+                  data.totalHoles,
+                  "\n",
+                  { text: "總切割數: ", alignment: "right", bold: true },
+                  data.totalCutting,
+                ],
+                margin: [0, 20, 0, 0],
+              },
+            ],
+          },
+          {
+            columns: [
+              {
+                text: [{ text: "內容型態: ", bold: true }, null],
+              },
+            ],
+          },
+          {
+            columns: [
+              {
+                text: [{ text: "型鋼型態: ", bold: true }, null],
+              },
+            ],
+          },
+          {
+            margin: [0, 10, 0, 10],
             table: {
+              justifyContent: "center",
               headerRows: 1,
-              widths: [120, 80, 120, 100, 100],
-              // 設定表格樣式
+
+              // 讓表格寬度固定，以便置中
+              widths: [50, "auto", 60, 70, "auto", 50, 50, "*"],
               body: [
                 [
-                  { text: "姓名", style: "tableHeader" },
-                  { text: "年齡", style: "tableHeader" },
-                  { text: "城市", style: "tableHeader" },
-                  { text: "條碼1", style: "tableHeader" },
-                  { text: "條碼2", style: "tableHeader" },
+                  { text: "項目", style: "tableHeader", alignment: "center" },
+                  {
+                    text: "斷面規格",
+                    style: "tableHeader",
+                    alignment: "center",
+                  },
+                  { text: "材質", style: "tableHeader", alignment: "center" },
+                  {
+                    text: "總料長(mm)",
+                    style: "tableHeader",
+                    alignment: "center",
+                  },
+                  {
+                    text: "加工長度(mm)",
+                    style: "tableHeader",
+                    alignment: "center",
+                  },
+                  { text: "數量", style: "tableHeader", alignment: "center" },
+                  { text: "鑽孔數", style: "tableHeader", alignment: "center" },
+                  { text: "備註", style: "tableHeader", alignment: "center" },
                 ],
-                ...generateLargeData(),
+                ...data.items.map((item) => [
+                  item.id,
+                  item.spec,
+                  item.material,
+                  item.length,
+                  item.processLength,
+                  item.quantity,
+                  item.holes,
+                  item.notes,
+                ]),
               ],
             },
           },
+          {
+            columns: [
+              {
+                width: "20%",
+                qr: `${data.barcodeInfo.location}-${data.barcodeInfo.serialNumber}-${data.barcodeInfo.length}-${data.barcodeInfo.quantity}`,
+                fit: 50,
+                margin: [0, 10, 0, 0],
+              },
+              {
+                width: "10%",
+                text: [
+                  { text: "儲位編號: ", bold: true },
+                  data.barcodeInfo.location,
+                ],
+                margin: [0, 10, 0, 0],
+              },
+              {
+                width: "10%",
+                text: [
+                  { text: "零件編號: ", bold: true },
+                  data.barcodeInfo.serialNumber,
+                ],
+                margin: [0, 10, 0, 0],
+              },
+              {
+                width: "10%",
+                text: [
+                  { text: "零件編號: ", bold: true },
+                  data.barcodeInfo.serialNumber,
+                ],
+                margin: [0, 10, 0, 0],
+              },
+              {
+                width: "10%",
+                text: [
+                  { text: "零件編號: ", bold: true },
+                  data.barcodeInfo.serialNumber,
+                ],
+                margin: [0, 10, 0, 0],
+              },
+              {
+                width: "10%",
+                text: [
+                  { text: "零件編號: ", bold: true },
+                  data.barcodeInfo.serialNumber,
+                ],
+                margin: [0, 10, 0, 0],
+              },
+              {
+                width: "30%",
+                alignment: "center", // 整個容器置中對齊
+                stack: [
+                  {
+                    text: "條碼", // Text below image
+                    alignment: "center",
+
+                    margin: [0, 10, 0, 0],
+                  },
+                  {
+                    image:
+                      "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAAAPCAMAAABEF7i9AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJUExURf///wAAAAAAAH5RqV0AAAADdFJOU///ANfKDUEAAAAJcEhZcwAADsIAAA7CARUoSoAAAADPSURBVDhPbYtBCsRADMPa/396G0mEPcTQqZGV5y/v+7zz9nzfABqj5PtJs6xnmLFU15dA5ziaZT3DjKW6vgQ6x9Es6xlmLNX1JdA5jmZZzzBjqa4vgc5xNMt6hhlLdX0JdI6jWdYzzFiq60ugcxzNsp5hxlJdXwKd42iW9Qwzlur6EugcR7OsZ5ixVNeXQOc4mmU9w4ylur4EOsfRLOsZZizV9SXQOY5mWc8wY6muL4HOcTTLeoYZS3V9CXSOo1nWM8xYqutLoHMczbKW5/kBwdAB/979pvkAAAAASUVORK5CYII=", // Your base64 image
+                    fit: [100, 100],
+                    margin: [0, 5, 0, 0],
+                  },
+                ],
+              },
+            ],
+          },
         ],
         styles: {
-          header: {
-            fontSize: 20,
-            bold: true,
-            alignment: "center",
-          },
           tableHeader: {
             bold: true,
-            fontSize: 13,
+            fontSize: 12,
             alignment: "center",
-            fillColor: "#CCCCCC",
+            fillColor: "#f2f2f2",
           },
+        },
+        defaultStyle: {
+          font: "aaa",
         },
       };
 
       const pdfDoc = pdfMake.createPdf(docDefinition);
-      pdfDoc.download("完整表格_7000頁.pdf");
-
+      console.log("pdfDoc", pdfDoc);
+      pdfDoc.download("加工明細單.pdf");
       setProgress("PDF 下載完成！");
     } catch (error) {
       setProgress("生成 PDF 時發生錯誤");
       console.error("錯誤:", error);
     } finally {
       setIsDownloading(false);
-      // stopTimer(); // 停止計時
     }
   };
 
@@ -127,8 +296,7 @@ function App() {
       <div>
         <button
           onClick={async () => {
-           
-            downloadFullPDF();
+            downloadProcessingList();
           }}
           disabled={isDownloading}
         >
@@ -138,7 +306,7 @@ function App() {
           show pdf
         </button> */}
       </div>
-      {(progress > 0) && (
+      {progress > 0 && (
         <div
           style={{
             marginTop: "10px",
@@ -151,7 +319,6 @@ function App() {
           }}
         >
           <span>{progress}</span>
-        
         </div>
       )}
 
